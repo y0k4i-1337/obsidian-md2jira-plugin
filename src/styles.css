@@ -1,0 +1,44 @@
+.heading-add > div:first-child {
+    flex: 0 1 55%;
+    flex-wrap: wrap;
+}
+
+.heading-add > div:not(:first-child) {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+}
+
+.heading-input {
+    display: flex;
+    flex: 1 1 70%;
+    justify-content: space-between;
+}
+
+.disabled-button {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
+
+.btn-delete {
+    background-color: var(--background-modifier-error) !important;
+    color: var(--text-on-accent) !important;
+}
+
+.btn-delete:hover {
+    background-color: var(--background-modifier-error-hover) !important;
+    color: var(--interactive-accent-hover) !important;
+}
+
+/* Edit modal */
+.edit-modal .modal-content {
+    display: flex;
+    align-items: justify;
+}
+
+.edit-modal .modal-content input {
+    order: -1;
+    display: flex;
+    justify-content: space-between;
+    flex: 1 1 70%;
+    margin-inline-end: var(--size-4-4);
+}
