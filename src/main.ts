@@ -1,7 +1,9 @@
-import { Editor, MarkdownView, Notice, Plugin } from 'obsidian';
+import { Editor, Notice, Plugin, TFile } from 'obsidian';
+import { marked, Token } from 'marked';
 import { DEFAULT_SETTINGS } from './constants';
 import { Md2JiraPluginSettings } from './types';
 import { Md2JiraPluginSettingsTab } from './settings-tab';
+import { renderer } from './parser';
 
 export default class Md2JiraPlugin extends Plugin {
     settings: Md2JiraPluginSettings;
@@ -10,56 +12,115 @@ export default class Md2JiraPlugin extends Plugin {
         console.log("Loading Markdown to Jira plugin");
         await this.loadSettings();
 
-        // This creates an icon in the left ribbon.
-        const ribbonIconEl = this.addRibbonIcon('ticket', 'Convert to Jira Text Formatting Notation', (evt: MouseEvent) => {
-            // Called when the user clicks the icon.
-            new Notice('TODO: menu');
-        });
+        marked.use({ renderer });
 
-
-
-        // This adds a simple command that can be triggered anywhere
-        this.addCommand({
-            id: 'open-sample-modal-simple',
-            name: 'Open sample modal (simple)',
-            callback: () => {
-            }
-        });
-        // This adds an editor command that can perform some operation on the current editor instance
-        this.addCommand({
-            id: 'sample-editor-command',
-            name: 'Sample editor command',
-            editorCallback: (editor: Editor, view: MarkdownView) => {
-                console.log(editor.getSelection());
-                editor.replaceSelection('Sample Editor Command');
-            }
-        });
-        // This adds a complex command that can check whether the current state of the app allows execution of the command
-        this.addCommand({
-            id: 'open-sample-modal-complex',
-            name: 'Open sample modal (complex)',
-            checkCallback: (checking: boolean) => {
-                // Conditions to check
-                const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-                if (markdownView) {
-                    // If checking is true, we're simply "checking" if the command can be run.
-                    // If checking is false, then we want to actually perform the operation.
-                    if (!checking) {
-                    }
-
-                    // This command will only show up in Command Palette when the check function returns true
-                    return true;
-                }
-            }
-        });
-
-        // This adds a settings tab so the user can configure various aspects of the plugin
         this.addSettingTab(new Md2JiraPluginSettingsTab(this.app, this));
 
+        this.addCommand({
+            id: 'convert-to-jira-format',
+            name: 'Convert to Jira format and copy to clipboard',
+            editorCallback: (editor: Editor) => {
+                const content = editor.getValue();
+                const jiraContent = this.convertToJiraFormat(content);
+                navigator.clipboard.writeText(jiraContent);
+                new Notice('Converted to Jira format and copied to clipboard');
+            }
+        });
+
+        this.addCommand({
+            id: 'export-to-jira-format',
+            name: 'Export to Jira format',
+            callback: async () => {
+                const activeFile = this.app.workspace.getActiveFile();
+                if (activeFile) {
+                    await this.exportFileToJira(activeFile);
+                } else {
+                    new Notice('No active file');
+                }
+            }
+        })
+
+        // Ribbon to export the current file to Jira format
+        this.addRibbonIcon('ticket', 'Export to Jira format', async () => {
+            const activeFile = this.app.workspace.getActiveFile();
+            if (activeFile) {
+                await this.exportFileToJira(activeFile);
+            } else {
+                new Notice('No active file');
+            }
+        });
     }
 
     onunload() {
         console.log("Unloading Markdown to Jira plugin");
+    }
+
+    convertToJiraFormat(content: string): string {
+        let omitHeadings = this.settings.omitHeadings;
+        let ignoreSections = this.settings.ignoreSections;
+        let headingShift = this.settings.headingShift;
+
+        const walkTokens = (token: Token) => {
+            if (token.type === 'heading') {
+                token.depth = Math.min(6, Math.max(1, token.depth + headingShift));
+            }
+        };
+        marked.use({ walkTokens });
+        let converted = marked.parse(content, { async: false });
+
+        // Remove entire sections (including all nested content)
+        if (ignoreSections.length > 0) {
+            let lines = converted.split("\n");
+            let newLines: string[] = [];
+            let skip = false;
+            let skipLevel = 0;
+
+            for (let line of lines) {
+                let headingMatch = line.match(/^h([1-6])\. (.*)/);
+
+                if (headingMatch) {
+                    let level = parseInt(headingMatch[1]);
+                    let headingText = headingMatch[2];
+
+                    // Check if we are in an ignored section
+                    if (ignoreSections.includes(headingText)) {
+                        skip = true;
+                        skipLevel = level;
+                        continue; // Do not add this heading
+                    }
+
+                    // If we reach a heading of equal or higher level, stop skipping
+                    if (skip && level <= skipLevel) {
+                        skip = false;
+                    }
+                }
+
+                if (!skip) {
+                    newLines.push(line);
+                }
+            }
+
+            converted = newLines.join("\n");
+        }
+
+        // Remove specific headings but keep content
+        if (omitHeadings.length > 0) {
+            let omitRegex = new RegExp(`^h[1-6]\\. (${omitHeadings.map(h => escapeRegex(h)).join("|")})\\n?\\n*`, "gm");
+            converted = converted.replace(omitRegex, "");
+        }
+
+        return converted;
+    }
+
+    async exportFileToJira(file: TFile) {
+        const content = await this.app.vault.read(file);
+        const jiraContent = this.convertToJiraFormat(content);
+        const outputPath = this.settings.exportPath;
+        const outputName = file.basename + '-jira.txt';
+        // Create the export directory if it doesn't exist
+        await this.app.vault.adapter.mkdir(outputPath);
+        await this.app.vault.adapter.write(`${outputPath}/${outputName}`, jiraContent);
+        new Notice(`Exported to Jira format! Check ${outputPath}/${outputName}`);
     }
 
     async loadSettings() {
@@ -69,4 +130,9 @@ export default class Md2JiraPlugin extends Plugin {
     async saveSettings() {
         await this.saveData(this.settings);
     }
+}
+
+// Helper function to escape regex special characters
+function escapeRegex(text: string): string {
+    return text.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 }

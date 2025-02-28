@@ -39,28 +39,6 @@ export class Md2JiraPluginSettingsTab extends PluginSettingTab {
                     await this.plugin.saveSettings();
                 }));
 
-        // Convert Headings to Bold
-        new Setting(containerEl)
-            .setName('Convert Headings to Bold')
-            .setDesc('Convert all headings to bold text instead of Jira headings.')
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.convertHeadingsToBold)
-                .onChange(async (value) => {
-                    this.plugin.settings.convertHeadingsToBold = value;
-                    await this.plugin.saveSettings();
-                }));
-
-        // Keep Image Descriptions
-        new Setting(containerEl)
-            .setName('Keep Image Descriptions')
-            .setDesc('Include image descriptions in the output.')
-            .addToggle(toggle => toggle
-                .setValue(this.plugin.settings.keepImageDescriptions)
-                .onChange(async (value) => {
-                    this.plugin.settings.keepImageDescriptions = value;
-                    await this.plugin.saveSettings();
-                }));
-
         // Save export path
         new Setting(containerEl)
             .setName('Export Path')
