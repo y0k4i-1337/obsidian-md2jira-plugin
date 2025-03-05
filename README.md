@@ -39,7 +39,7 @@ The plugin supports the following syntax conversion:
 1. Download the latest release from the
    [Releases](https://github.com/y0k4i-1337/obsidian-md2jira-plugin/releases)
    page;
-2. Extract the contents of the zip file to your vault's plugins folder;
+2. Download `main.js` and `manifest.json` to a proper folder inside your vault's plugins folder;
 3. Reload Obsidian.
 
 ## License
