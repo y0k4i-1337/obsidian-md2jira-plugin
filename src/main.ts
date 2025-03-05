@@ -29,7 +29,7 @@ export default class Md2JiraPlugin extends Plugin {
 
         this.addCommand({
             id: 'export-to-jira-format',
-            name: 'Export to Jira format',
+            name: 'Export to Jira format as file',
             callback: async () => {
                 const activeFile = this.app.workspace.getActiveFile();
                 if (activeFile) {
@@ -41,7 +41,7 @@ export default class Md2JiraPlugin extends Plugin {
         })
 
         // Ribbon to export the current file to Jira format
-        this.addRibbonIcon('ticket', 'Export to Jira format', async () => {
+        this.addRibbonIcon('ticket', 'Export to Jira format as file', async () => {
             const activeFile = this.app.workspace.getActiveFile();
             if (activeFile) {
                 await this.exportFileToJira(activeFile);

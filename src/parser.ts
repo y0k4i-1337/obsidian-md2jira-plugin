@@ -100,8 +100,8 @@ export const renderer = {
     },
     code({ text, lang, escaped }: Tokens.Code): string {
         let langString = /^\S*/.exec(lang ?? '')?.[0] ?? 'none';
-
-        return `{code:language=${langString ?? ''}|borderStyle=solid|theme=RDark|linenumbers=false|collapse=${text.split('\n').length > MAX_CODE_LINE}}\n${text}\n{code}\n\n`
+        langString = LANG_MAP[langString as keyof typeof LANG_MAP] ?? 'none';
+        return `{code:language=${langString}|borderStyle=solid|theme=RDark|linenumbers=false|collapse=${text.split('\n').length > MAX_CODE_LINE}}\n${text}\n{code}\n\n`
     },
     text(token: Tokens.Text | Tokens.Escape): string {
         return 'tokens' in token && token.tokens

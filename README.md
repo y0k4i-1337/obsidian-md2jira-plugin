@@ -11,8 +11,7 @@ This plugin allows you to export your Obsidian notes to Jira.
 
 ## Limitations
 
-- The plugin does not support all Markdown syntax;
-- The plugin does not support complex Markdown syntax.
+- The plugin was not tested with all possible markdown syntax.
 
 ## Syntax compatibility
 
