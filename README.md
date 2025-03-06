@@ -9,6 +9,25 @@ This plugin allows you to export your Obsidian notes to Jira.
 - Allows you to omit entire sections in the exported text;
 - Converted text can be copied to the clipboard or saved to a file.
 
+## How to use
+
+### Converting a note and copying to the clipboard
+
+1. Open the note you want to convert;
+2. Open the command palette (`Ctrl+P` or `Cmd+P`);
+3. Type `Convert to Jira format and copy to clipboard` and select the command;
+4. The converted text will be copied to the clipboard.
+
+### Converting a note and saving to a file
+
+1. Open the note you want to convert;
+2. Open the command palette (`Ctrl+P` or `Cmd+P`);
+3. Type `Export to Jira format as file` and select the command;
+4. The converted text will be saved to a file in the folder configured in the
+   plugin settings;
+5. Alternatively, you can select the note to be converted and use the `Export to Jira format as file` button in the
+   ribbon.
+
 ## Limitations
 
 - The plugin was not tested with all possible markdown syntax.
