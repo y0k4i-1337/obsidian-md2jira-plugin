@@ -1,10 +1,11 @@
 {
-	"id": "obsidian-md2jira-plugin",
-	"name": "Markdown to Jira",
-	"version": "1.0.1",
-	"description": "Convert Note to Jira Text Formatting Notation.",
-	"author": "y0k4i",
-	"authorUrl": "https://github.com/y0k4i-1337",
-	"fundingUrl": "",
-	"isDesktopOnly": false
+    "id": "markdown-to-jira",
+    "name": "Markdown to Jira",
+    "version": "1.0.2",
+    "minAppVersion": "1.8.3",
+    "description": "Convert Note to Jira Text Formatting Notation.",
+    "author": "y0k4i",
+    "authorUrl": "https://github.com/y0k4i-1337",
+    "fundingUrl": "",
+    "isDesktopOnly": false
 }

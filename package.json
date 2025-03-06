@@ -1,6 +1,6 @@
 {
 	"name": "@y0k4i-1337/obsidian-md2jira-plugin",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"description": "Markdown to Jira Obsidian Plugin",
 	"main": "src/main.js",
 	"scripts": {
