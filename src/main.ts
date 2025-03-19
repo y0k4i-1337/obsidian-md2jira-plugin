@@ -60,12 +60,9 @@ export default class Md2JiraPlugin extends Plugin {
         let ignoreSections = this.settings.ignoreSections;
         let headingShift = this.settings.headingShift;
 
-        const walkTokens = (token: Token) => {
-            if (token.type === 'heading') {
-                token.depth = Math.min(6, Math.max(1, token.depth + headingShift));
-            }
-        };
-        marked.use({ walkTokens });
+        // Ignore frontmatter
+        content = content.replace(/---\n([\s\S]*?)\n---\n/, "");
+
         let converted = marked.parse(content, { async: false });
 
         // Remove entire sections (including all nested content)
@@ -81,6 +78,12 @@ export default class Md2JiraPlugin extends Plugin {
                 if (headingMatch) {
                     let level = parseInt(headingMatch[1]);
                     let headingText = headingMatch[2];
+
+                    // Calculate the new level after shifting
+                    let newLevel = Math.min(6, Math.max(1, level + headingShift));
+
+                    // Update the heading level
+                    line = `h${newLevel}. ${headingText}`;
 
                     // Check if we are in an ignored section
                     if (ignoreSections.includes(headingText)) {
