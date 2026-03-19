@@ -1,7 +1,7 @@
 {
     "id": "markdown-to-jira",
     "name": "Markdown to Jira",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "minAppVersion": "1.8.3",
     "description": "Convert Note to Jira Text Formatting Notation.",
     "author": "y0k4i",

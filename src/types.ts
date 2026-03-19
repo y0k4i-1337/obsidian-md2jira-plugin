@@ -3,8 +3,6 @@ export interface Md2JiraPluginSettings {
 	ignoreSections: string[];
 	headingShift: number;
 	convertHeadingsToBold: boolean;
-    keepImageDescriptions: boolean;
-    useImageThumbnails: boolean;
 	exportFormat: string;
 	exportPath: string;
 }
